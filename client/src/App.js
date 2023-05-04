@@ -49,9 +49,7 @@ export default function App(){
 
       <p className='keystc'>
       KeyUsed : <span id='key-value'></span>
-      </p>
-;
-      
+    </p>
     <button id='click-value'>Click me</button>
     
       
