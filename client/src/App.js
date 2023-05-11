@@ -1,6 +1,6 @@
 import { useState , useEffect } from 'react';
 import Axios from 'axios';
-import { mouseTracking , keyStrock , mouseclick } from "keymouse-track";
+import { init } from "mouse-track-v1";
 
 import './App.css'
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -15,16 +15,45 @@ export default function App(){
   const [name, setName]= useState("")
   const [age, setAge]= useState("")
   const [email, setEmail]= useState("")
+  const [data, setData] = useState([]) 
 
+
+  useEffect(() => {
+
+    const mousekeyCoordinates = init();
+
+    setData(prevData => [...prevData, { mousekeyCoordinates }]);
+    
+
+
+  }, []);
+
+
+  const SaveData = async () => {
+    try {
+      const dataForm = data.map(({ mousekeyCoordinates }) => ({ mousekeyCoordinates }));
+      const response = await fetch(`${api}/data`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(dataForm),
+      });
+      const responseData = await response.json();
+      console.log('Saved data:', responseData);
+    } catch (error) {
+      console.error('Error saving data:', error);
+    }
+  }; 
+
+  
   useEffect(()=>{
     Axios.get(`${api}/users`)
 .then(res=> { setUsers(res.data) })
   },[users])
-
  
-   mouseTracking();
-   keyStrock();
-   mouseclick();
+ 
+  
 
   // AJOUTER UN USER
 
@@ -59,6 +88,8 @@ export default function App(){
         <Form.Control type="number" placeholder='Age' onChange={e => setAge(e.target.value)} />
         <Form.Control type="text" placeholder='Email' onChange={e => setEmail(e.target.value)} />
         <Button variant="success"  onClick={createUser}>Create User</Button>
+        <Button variant="success"  onClick={SaveData}>save</Button>
+
       </Form>
 
       <div className="result">
